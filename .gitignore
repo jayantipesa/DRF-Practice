@@ -1,0 +1,6 @@
+backend/db.sqlite3
+drf_tutorials.code-workspace
+*.pyc
+myproject/db.sqlite3
+myproject/.vscode/settings.json
+myproject

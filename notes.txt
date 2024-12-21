@@ -1,0 +1,138 @@
+---> DRF:
+- Drf is built on top django, it additionally gives a lot of new features.
+New things in drf:
+  - Serialization: DRF provides a serialization framework that allows you to easily convert complex data types, sych as django models
+    , into Python data types that can be easily rendered into JSON  or other content types.
+
+  - Provides additional View classes:
+    DRF introduces a set of class-based views that are specifically designed for handling HTTP methods (GET, POST, PUT, DELETE) for API endpoints. These views make it easy to structure your API views in a clean and reusable way.
+    eg: 
+      1. For a create/get list operation we have this inbuilt class:
+          generics.ListCreateAPIView, generics.ListAPIView
+      2. For Update/Delete/Retreiving specific record we have this class:
+          generics.RetrieveUpdateDestroyAPIView
+      
+      You can use them like this:
+      class BookListCreateAPIView(generics.ListCreateAPIView):
+          queryset = Book.objects.all()
+          serializer_class = BookSerializer
+
+      class BookRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+          queryset = Book.objects.all()
+          serializer_class = BookSerializer
+
+      Serializer:
+      class BookSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Book
+            fields = '__all__'
+
+  - Authentication and Permissions:
+    DRF includes a variety of authentication classes and permission classes that can be easily configured to control access to your API. It supports token-based authentication, OAuth, and more.
+
+  - Pagination:
+    DRF includes built-in support for paginating large result sets. It supports common pagination styles, such as page number and cursor-based pagination.
+
+  - Filtering, Searching, and Ordering:
+    DRF makes it easy to implement filtering, searching, and ordering of querysets. This allows clients to request only the data they need.
+  
+
+1. Rest APIs are often called web API.
+- Its doesn't neccessarily have to go through internet. Its called web api because it consumes HTTP protocol which are essentially the foundation of web.
+- Rest APIs use URIs to identify resources (such as data objects or services) like 'api/books/{book_id}'. These URIs are similar to web URLs used in web browser.
+- It does stateless communication which means each request sent to server from client contains all the info needed to understand and process the request. This aligns with the stateless  nature of HTTP, making it suitable for web based communication.
+
+2. The difference in HTTP request and RestAPI HTTP request:
+- when you fire a HTTP request to a web page, it will return a HTML document.
+-eg: 
+  >import requests
+  >response = requests.get("https://github.com")
+  >print(response.text) ----> this will contain the source code of github in html format.
+
+- when you fire a restAPI HTTP request, it will return a json object that can be consumed futher.
+-eg: 
+  >import requests
+  >response = requests.get("https://github.com/api/get_files")
+  >print(response.text)
+
+  - o/p: will be something like this
+  {
+    "args": {}, 
+    "data": "", 
+    "files": {}, 
+    "form": {}, 
+    "headers": {
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7", 
+      "Accept-Encoding": "gzip, deflate, br", 
+      "Accept-Language": "en-US,en;q=0.9", 
+      "Host": "httpbin.org", 
+      "Sec-Ch-Ua": "\"Not_A Brand\";v=\"8\", \"Chromium\";v=\"120\", \"Google Chrome\";v=\"120\"", 
+      "Sec-Ch-Ua-Mobile": "?0", 
+      "Sec-Ch-Ua-Platform": "\"macOS\"", 
+      "Sec-Fetch-Dest": "document", 
+      "Sec-Fetch-Mode": "navigate", 
+      "Sec-Fetch-Site": "none", 
+      "Sec-Fetch-User": "?1", 
+      "Upgrade-Insecure-Requests": "1", 
+      "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36", 
+      "X-Amzn-Trace-Id": "Root=1-658f01a8-72291a05548605ba6a9b0fd8"
+    }, 
+    "json": null, 
+    "method": "GET", 
+    "origin": "58.84.62.64", 
+    "url": "https://httpbin.org/anything"
+  }
+
+- key difference here is web HTTP requests are made for browsers and end users to understand but restAPI requests are not meant to be directly consumed by browser
+- They are more meant to be for development purpose for softwares.
+- We just build softwares which will consume them and give it to end users.
+
+3. request object in django views:
+- The request arg received in django views are basically HTTP request objects of Django.
+- It has its own methods to retrieve info from client request
+- eg: 
+  >def api_home(request, *args, **kwargs):
+      pass
+  do dir(request) to check all attributes and methods of request object.
+
+- You might want to make some data available inside the request object apart from whats coming from client, before this request object is received by django views.
+- for eg. in Simplelegal, we are able to do request.user (which contains the customUser db obj of signed in user)
+- This customisation can be done through middlewares. (ask chatgpt for more info)
+- After writing middleware and declaring them in settings.py, you can ensure that every requests goes through these middlewares first.
+-eg:
+  class CustomMiddleware:
+      def __init__(self, get_response):
+          self.get_response = get_response
+
+      def __call__(self, request):
+          # Add a custom attribute to the request
+          request.client = "CustomClient" ----> you can define custom properties to request obj here.
+
+          # Pass the request to the next middleware or view
+          response = self.get_response(request)
+
+          return response
+
+  // Add it to settings.py
+
+
+
+4. Django always absolutely needs csrf token in its header whereas requests in drf will go through even if csrf token is not present.
+  - Django views are return with the intent to be consumed through web apps. That's why its important to have security against csrf attacks etc.
+    So with all the state-changing HTTP methods (PUT, POST, PATCH, DELETE), csrf protection is applied.
+
+  - DRF on the other hand, is designed to build APIs (consumed either directly or third party apps) and APIs typically don't rely on cookies for authentication, which is key part of Django's CSRF protection mechanism.
+    Instead API clients often use tokens (e.g. JWT tokens) for authentication, and CSRF protection in Django is not directly applicable to API request.
+
+5. Difference in DRF class based views and function based views:
+
+  - DRF class based inbuilt views like ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView etc help in building really clean code structure.
+    You will have to write minimal code to get things done.
+    But these are also provide less flexibilty to add new code because a lot of things are prewritten
+
+  - In function based views, you will have to write all the code from scratch for you CRUD operations.
+    Due to this, the logic for all this is kinda all over the place and is not easy to understand and not that readable.
+    But it also is very flexible given all the logic is written by the developer.
+
+6. What is a mixin? How are the rest api views working internally?
+    what is the difference in the mixin classes and generic classes? mixin.ListModelView and generics.ListAPIView
