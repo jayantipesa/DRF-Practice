@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'api',
     'products',
+    'search'
 ]
 
 MIDDLEWARE = [
@@ -140,7 +141,10 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
         # "rest_framework.permissions.IsAdminUser",
         # "products.permissions.IsStaffEditorPermission"
-    ]
+    ],
+
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 5
 }
 
 
