@@ -18,8 +18,7 @@ class UserProductSerializer(serializers.Serializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
-    related_products = serializers.SerializerMethodField(read_only=True)
-    # email = serializers.EmailField(source='user.email', read_only=True)
+    # related_products = serializers.SerializerMethodField(read_only=True)
     my_discount = serializers.SerializerMethodField(read_only=True)
     edit_url = serializers.SerializerMethodField(read_only=True)
     url = serializers.HyperlinkedIdentityField(
@@ -37,14 +36,13 @@ class ProductSerializer(serializers.ModelSerializer):
         validators.unique_title_validator
     ])
     name = serializers.CharField(source='title', read_only=True)
-    # email = serializers.EmailField(write_only=True)
 
     class Meta:
         model = Product
         fields = [
             'id',
             'user',
-            'related_products',
+            # 'related_products',
             'title',
             'name',
             'content',
@@ -53,7 +51,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'my_discount',
             'edit_url',
             'url',
-            # 'email'
+            'public'
         ]
 
     """
