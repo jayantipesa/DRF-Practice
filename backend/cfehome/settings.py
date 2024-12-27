@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from rest_framework.settings import api_settings
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,8 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # third party services
+    'algoliasearch_django',
+
+    # third party packages
     'rest_framework',
     'rest_framework.authtoken',
+
+    # internal apps
     'api',
     'products',
     'search'
@@ -152,3 +159,9 @@ api_settings.DEFAULT_AUTHENTICATION_CLASSES
 api_settings.DEFAULT_PERMISSION_CLASSES
 api_settings.DEFAULT_PARSER_CLASSES
 api_settings.DEFAULT_RENDERER_CLASSES
+
+ALGOLIA = {
+    'APPLICATION_ID': os.environ['ALGOLIA_APPLICATION_ID'],
+    'API_KEY': os.environ['ALGOLIA_API_KEY'],
+    'INDEX_PREFIX': 'products'
+}

@@ -4,3 +4,4 @@ drf_tutorials.code-workspace
 myproject/db.sqlite3
 myproject/.vscode/settings.json
 myproject
+.env

@@ -1,3 +1,4 @@
+import random
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
@@ -40,6 +41,10 @@ class ProductManager(models.Manager):
         return self.get_queryset().search(query, user=user)
 
 
+TAGS_MODEL_VALUES = ['electronics', 'stationary',
+                     'car', 'clothes', 'footwear', 'sports']
+
+
 class Product(models.Model):
     user = models.ForeignKey(User, default=1, null=True,
                              on_delete=models.SET_NULL
@@ -50,6 +55,12 @@ class Product(models.Model):
     public = models.BooleanField(default=True)
 
     objects = ProductManager()
+
+    def is_public(self):
+        return self.public
+
+    def get_tags_list(self):
+        return [random.choice(TAGS_MODEL_VALUES)]
 
     @property
     def sale_price(self):
