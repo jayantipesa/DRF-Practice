@@ -19,7 +19,7 @@ def perform_search(query, **kwargs):
     tags = ''
     params = {}
     if "tags" in kwargs:
-        tags = kwargs.pop('tags', [])
+        tags = kwargs.pop('tags') or []
         if len(tags) > 0:
             params['tagFilters'] = tags
     index_filters = [f'{k}: {v}' for k, v in kwargs.items() if v]
