@@ -5,3 +5,4 @@ myproject/db.sqlite3
 myproject/.vscode/settings.json
 myproject
 .env
+creds.json
