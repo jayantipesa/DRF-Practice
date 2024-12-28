@@ -5,3 +5,4 @@ pyyaml
 requests
 django-cors-headers
 algoliasearch-django>=3.0,<4.0
+django-cors-headers
