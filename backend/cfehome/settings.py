@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-
+import datetime
 from rest_framework.settings import api_settings
 from pathlib import Path
 import os
@@ -43,8 +43,10 @@ INSTALLED_APPS = [
     'algoliasearch_django',
 
     # third party packages
+    'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework_simplejwt',
 
     # internal apps
     'api',
@@ -55,6 +57,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -63,6 +66,14 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'cfehome.urls'
+CORS_URLS_REGEX = r'^/api/.*'
+CORS_ALLOWED_ORIGINS = []
+
+if DEBUG:
+    CORS_ALLOWED_ORIGINS += [
+        'http://127.0.0.1:8111',
+        'https://127.0.0.1:8111'
+    ]
 
 TEMPLATES = [
     {
@@ -139,7 +150,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication",
-        "api.authentication.TokenAuthentication"
+        "api.authentication.TokenAuthentication",
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
 
     # permission classes can be tricky as it might differ for
@@ -155,13 +167,19 @@ REST_FRAMEWORK = {
 }
 
 
-api_settings.DEFAULT_AUTHENTICATION_CLASSES
-api_settings.DEFAULT_PERMISSION_CLASSES
-api_settings.DEFAULT_PARSER_CLASSES
-api_settings.DEFAULT_RENDERER_CLASSES
+# api_settings.DEFAULT_PERMISSION_CLASSES
+# api_settings.DEFAULT_PARSER_CLASSES
+# api_settings.DEFAULT_RENDERER_CLASSES
+# api_settings.DEFAULT_AUTHENTICATION_CLASSES
 
 ALGOLIA = {
     'APPLICATION_ID': os.environ['ALGOLIA_APPLICATION_ID'],
     'API_KEY': os.environ['ALGOLIA_API_KEY'],
     'INDEX_PREFIX': 'products'
+}
+
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ['Bearer'],
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(seconds=30),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(minutes=1)
 }
